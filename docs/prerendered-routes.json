@@ -1,0 +1,12 @@
+{
+  "routes": {
+    "/expense-tracker-ui": {},
+    "/expense-tracker-ui/about": {},
+    "/expense-tracker-ui/add": {},
+    "/expense-tracker-ui/add-remove": {},
+    "/expense-tracker-ui/home": {},
+    "/expense-tracker-ui/login": {},
+    "/expense-tracker-ui/navbar": {},
+    "/expense-tracker-ui/register": {}
+  }
+}

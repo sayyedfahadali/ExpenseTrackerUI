@@ -1,0 +1,45 @@
+<div container class="container mx-6 my-3">
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Date</th>
+        <th scope="col">Description</th>
+        <th scope="col">Category</th>
+        <th scope="col">Amount</th>
+        <th scope="col" *ngIf="editRemoveColumnActive === true">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let expense of expenses; let i = index">
+        <th scope="row">{{ i+1 }}</th>
+        <td>
+          <span *ngIf="!expense.editable">{{ expense.date ? (expense.date | date:'mediumDate') : 'No description' }}</span>
+          <input *ngIf="expense.editable" type="date" [(ngModel)]="expense.date" [disabled]="!expense.editable" [placeholder]="expense.date">
+        </td>
+        <td>
+          <span *ngIf="!expense.editable">{{ expense.description ? (expense.description) : 'No description' }}</span>
+          <input *ngIf="expense.editable" type="text" [(ngModel)]="expense.description" [disabled]="!expense.editable" placeholder="Description">
+        </td>
+        <td>
+          <span *ngIf="!expense.editable">{{ expense.category?.name }}</span>
+          <select *ngIf="expense.editable" [(ngModel)]="expense.category" [disabled]="!expense.editable">
+            <option *ngFor="let cat of expenseCategory" [ngValue]="cat">
+             {{ cat.name }}
+            </option>
+          </select>
+        </td>
+        <td>
+          <span *ngIf="!expense.editable">{{ expense.amount | currency: 'INR' }}</span>
+          <input *ngIf="expense.editable" type="number" [(ngModel)]="expense.amount" [disabled]="!expense.editable" placeholder="Amount">
+        </td>
+        <td *ngIf="editRemoveColumnActive === true">
+          <button type="button" class="btn btn-primary me-3" (click)="toggleEdit(i)">
+            {{ expense.editable ? 'Save' : 'Edit' }}
+          </button>
+          <button type="button" class="btn btn-danger" (click)="deleteButtonClicked(i)">Remove</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

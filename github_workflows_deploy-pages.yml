@@ -1,0 +1,57 @@
+# Build Angular prerendered output and deploy to GitHub Pages
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Angular (prerender / browser output)
+        # Adjust this command if you normally run a different build command.
+        run: |
+          npx -y @angular/cli@latest build --configuration production --output-path=dist/browser --base-href /ExpenseTrackerUI/
+
+      - name: Prepare deploy folder (flatten dist/browser/browser -> deploy/)
+        run: |
+          rm -rf deploy
+          mkdir -p deploy
+          # Copy all prerendered pages and assets from dist/browser/browser into deploy/
+          cp -a dist/browser/browser/. deploy/
+          # Ensure a root index.html exists (copy the home prerendered page to root)
+          if [ -f "deploy/home/index.html" ]; then
+            cp deploy/home/index.html deploy/index.html
+          elif [ -f "deploy/index.html" ]; then
+            echo "deploy/index.html already exists"
+          else
+            echo "Warning: no deploy/home/index.html found; listing deploy contents:" && ls -la deploy
+          fi
+          # Optional: list deploy contents for logs
+          echo "Contents of deploy:"
+          ls -la deploy | sed -n '1,200p'
+
+      - name: Upload artifact (upload contents, not parent folder)
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: deploy/**
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
